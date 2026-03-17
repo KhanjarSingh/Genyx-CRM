@@ -323,14 +323,14 @@ export function Settings() {
                          <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
                                <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest">Alert Density</p>
-                               <p className="text-3xl font-black text-gray-900 dark:text-dark-text tabular-nums">~12<span className="text-sm text-gray-400 dark:text-dark-text-muted ml-1">/hr</span></p>
+                               <p className="text-3xl font-mono font-black text-gray-900 dark:text-dark-text tabular-nums">~12<span className="text-sm text-gray-400 dark:text-dark-text-muted ml-1">/hr</span></p>
                                <div className="w-full bg-gray-100 dark:bg-dark-elevated h-1.5 rounded-full overflow-hidden">
                                   <div className="w-[40%] h-full bg-emerald-500" />
                                </div>
                             </div>
                             <div className="space-y-2">
                                <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest">Staff Workload</p>
-                               <p className="text-3xl font-black text-gray-900 dark:text-dark-text tabular-nums">Low</p>
+                               <p className="text-3xl font-mono font-black text-gray-900 dark:text-dark-text tabular-nums">Low</p>
                                <div className="w-full bg-gray-100 dark:bg-dark-elevated h-1.5 rounded-full overflow-hidden">
                                   <div className="w-[20%] h-full bg-blue-500" />
                                </div>

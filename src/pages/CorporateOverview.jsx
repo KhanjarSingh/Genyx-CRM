@@ -69,16 +69,20 @@ export function CorporateOverview() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0F172A] transition-colors">
-      {/* ── Sticky page header ─────────────────────────────────────────── */}
-      <div className="bg-white dark:bg-[#1A1B2E] border-b border-gray-100 dark:border-[#2D3748] px-6 py-5 mb-0 shadow-[0_1px_4px_rgba(0,0,0,0.04)] sticky top-0 z-10 transition-colors">
+      {/* ── Page header ────────────────────────────────────────────────── */}
+      <div className="bg-white dark:bg-[#1A1B2E] border-b border-gray-100 dark:border-[#2D3748] px-6 py-5 mb-0 shadow-[0_1px_4px_rgba(0,0,0,0.04)] transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Building2 className="w-4 h-4 text-brand" />
               <span className="text-[11px] font-black tracking-[4px] uppercase text-brand">Executive Command</span>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter uppercase leading-tight">Corporate Overview</h1>
-            <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-1 font-bold uppercase tracking-widest">Global Portfolio Performance · {allLocations.length} Facilities</p>
+            <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-[#F1F5F9] sm:text-3xl sm:tracking-tight">
+              Corporate Overview
+            </h1>
+            <p className="mt-2 text-sm leading-normal text-gray-500 dark:text-[#94A3B8]">
+              Global portfolio performance · {allLocations.length} facilities
+            </p>
           </div>
         </div>
       </div>

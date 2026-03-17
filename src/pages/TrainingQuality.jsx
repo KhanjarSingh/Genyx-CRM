@@ -94,8 +94,12 @@ export function TrainingIntelligence() {
               <Brain className="w-4 h-4 text-[#059669]" />
               <span className="text-[11px] font-bold tracking-[4px] uppercase text-[#059669]">GENYX Training Intelligence</span>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-dark-text tracking-tighter uppercase leading-tight">Coaching Command Center</h1>
-            <p className="text-sm text-gray-500 dark:text-dark-text-secondary mt-1 font-bold uppercase tracking-widest">Movement Quality · Coaching ROI · Injury Risk Map</p>
+            <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-dark-text sm:text-3xl sm:tracking-tight">
+              Coaching Command Center
+            </h1>
+            <p className="mt-2 text-sm leading-normal text-gray-500 dark:text-dark-text-secondary">
+              Movement quality, coaching ROI, and injury risk.
+            </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <span className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/40 px-4 py-2 rounded-full uppercase tracking-widest">

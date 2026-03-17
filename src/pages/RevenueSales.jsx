@@ -109,15 +109,15 @@ export function RevenueSales() {
                 </div>
                 <p className="text-[10px] font-black text-gray-400 dark:text-[#94A3B8] uppercase tracking-[2px]">{kpi.title}</p>
               </div>
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="text-3xl font-mono font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter tabular-nums">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                <span className="text-3xl font-mono font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter tabular-nums min-w-0">
                   {kpi.title.includes('Revenue') || kpi.title.includes('MRR') || kpi.title.includes('ARPM') || kpi.title.includes('CAC')
                     ? formatCurrency(parseInt(String(kpi.value).replace(/[^0-9]/g, '')) || 0, 'en-IN', currentLocation.currency)
                     : kpi.value}
                 </span>
-                <div className={`px-2 py-0.5 rounded-full text-[10px] font-black ${kpi.positive ? 'bg-success/10 text-success dark:bg-success/20' : 'bg-critical/10 text-critical dark:bg-critical/20'} flex items-center gap-1 shrink-0`}>
+                <div className={`inline-flex w-fit max-w-full px-2 py-0.5 rounded-full text-[10px] font-black ${kpi.positive ? 'bg-success/10 text-success dark:bg-success/20' : 'bg-critical/10 text-critical dark:bg-critical/20'} items-center gap-1`}>
                   {kpi.positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                  {kpi.trend}
+                  <span className="truncate max-w-[160px]">{kpi.trend}</span>
                 </div>
               </div>
             </Card>
@@ -187,10 +187,14 @@ export function RevenueSales() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <DollarSign className="w-4 h-4 text-brand" />
-              <span className="text-[11px] font-black tracking-[4px] uppercase text-brand">GENYX Revenue Intelligence</span>
+              <span className="text-[11px] font-bold tracking-[4px] uppercase text-brand">GENYX Revenue Intelligence</span>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter uppercase leading-tight">Revenue & Sales</h1>
-            <p className="text-xs text-gray-400 dark:text-[#94A3B8] font-bold uppercase tracking-widest mt-1">Movable Grid · Smart Pipeline · Coaching ROI</p>
+            <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-[#F1F5F9] sm:text-3xl sm:tracking-tight">
+              Revenue & Sales
+            </h1>
+            <p className="mt-2 text-sm leading-normal text-gray-500 dark:text-[#94A3B8]">
+              Movable grid · smart pipeline · coaching ROI
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="bg-white dark:bg-[#0F172A] border-gray-200 dark:border-[#2D3748] text-gray-600 dark:text-[#94A3B8] font-bold text-xs gap-2 h-9">

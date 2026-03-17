@@ -36,9 +36,9 @@ export function LiveActivity() {
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center text-sm text-gray-500 dark:text-dark-text-secondary">
                   <Users className="h-4 w-4 mr-1.5" />
-                  <span className="font-medium text-gray-900 dark:text-dark-text">{zone.current}</span>
+                  <span className="font-mono font-bold tabular-nums text-gray-900 dark:text-dark-text">{zone.current}</span>
                   <span className="mx-1">/</span>
-                  <span>{zone.capacity}</span>
+                  <span className="font-mono font-bold tabular-nums">{zone.capacity}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-400 dark:text-dark-text-muted">
                   <Camera className="h-4 w-4 mr-1" />

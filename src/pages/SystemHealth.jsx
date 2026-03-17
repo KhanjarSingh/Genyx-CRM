@@ -63,8 +63,12 @@ export function SystemHealth() {
               <Server className="w-4 h-4 text-brand" />
               <span className="text-[11px] font-black tracking-[4px] uppercase text-brand">GENYX Infrastructure Monitor</span>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter uppercase leading-tight">System Intel</h1>
-            <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-1 font-bold uppercase tracking-widest">Local Pod Fleet · AI Interference · Edge Compute Diagnostics</p>
+            <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-[#F1F5F9] sm:text-3xl sm:tracking-tight">
+              System Intel
+            </h1>
+            <p className="mt-2 text-sm leading-normal text-gray-500 dark:text-[#94A3B8]">
+              Local pod fleet, AI inference, and edge compute diagnostics.
+            </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
              <Button variant="outline" className="bg-white dark:bg-[#0F172A] border-gray-200 dark:border-[#2D3748] text-gray-600 dark:text-[#94A3B8] font-black text-[10px] uppercase tracking-widest gap-2 h-10 px-4 transition-colors">
