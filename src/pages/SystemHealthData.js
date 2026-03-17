@@ -70,7 +70,7 @@ export const systemAlerts = [
   { id: 1, type: 'critical', msg: 'Pod Beta: CPU Temperature High (78°C)', time: '4 mins ago' },
   { id: 2, type: 'warning', msg: 'Pod Delta: Connection dropped', time: '14 mins ago' },
   { id: 3, type: 'info', msg: 'Pod Gamma: Calibration completed', time: '1 hour ago' },
-  { id: 4, type: 'warning', msg: 'Zone: Cardio Zone — Degraded coverage', time: '4 hours ago' },
+  { id: 4, type: 'warning', msg: 'Zone: Cardio Zone Degraded coverage', time: '4 hours ago' },
 ];
 
 export const diagnosticTests = [

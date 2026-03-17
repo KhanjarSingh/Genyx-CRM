@@ -58,7 +58,7 @@ export function AppConfigProvider({ children }) {
   const value = useMemo(() => {
     const anonymize = compliance.gdprMode || compliance.dpdpaMode;
     const memberDisplayName = (member) => {
-      if (!anonymize) return member?.name || '—';
+      if (!anonymize) return member?.name || '';
       const idPart = String(member?.id || '').replace(/\D/g, '').slice(-4) || String(Math.floor(Math.random() * 9000) + 1000);
       return `Member #${idPart}`;
     };

@@ -1,25 +1,57 @@
-import { Fragment, useState } from 'react';
-import { Card, CardContent } from '../components/UI/Card';
-import { Badge } from '../components/UI/Badge';
-import { Button } from '../components/UI/Button';
 import {
-  TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Users, Activity,
-  ChevronRight, Target, ArrowUpRight, ArrowDownRight, Zap, Star,
-  Dumbbell, Brain, CheckCircle2
+  Activity,
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  Brain,
+  CheckCircle2,
+  ChevronRight,
+  Dumbbell,
+  ShieldAlert,
+  Star,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Users,
+  Zap
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer, Legend, LineChart, Line, Area, AreaChart, Cell
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  XAxis,
+  YAxis
 } from 'recharts';
+import { Card, CardContent } from '../components/UI/Card';
+import { Fragment, useState } from 'react';
 import {
-  gymHealthKPIs, progressTrendData, memberProgressStats, memberSegmentData,
-  exerciseQualityData, biomechanicsData, membersAtRiskData,
-  trainerPerformanceData, ptVsSoloData, weeklyActionPlan, supplementalStats
+  biomechanicsData,
+  exerciseQualityData,
+  gymHealthKPIs,
+  memberProgressStats,
+  memberSegmentData,
+  membersAtRiskData,
+  progressTrendData,
+  ptVsSoloData,
+  supplementalStats,
+  trainerPerformanceData,
+  weeklyActionPlan
 } from './TrainingQualityData';
-import { useLocation } from '../context/LocationContext';
-import { formatCurrency } from '../utils/currency';
-import { OnboardingTooltip } from '../components/UI/OnboardingTooltip';
+
+import { Badge } from '../components/UI/Badge';
+import { Button } from '../components/UI/Button';
 import { EmptyState } from '../components/UI/EmptyState';
+import { OnboardingTooltip } from '../components/UI/OnboardingTooltip';
+import { formatCurrency } from '../utils/currency';
+import { useLocation } from '../context/LocationContext';
 import { useNavigate } from 'react-router-dom';
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
@@ -382,7 +414,7 @@ export function TrainingIntelligence() {
 
               <Card className="border-gray-100 dark:border-dark-border shadow-sm mt-4 rounded-2xl overflow-hidden">
                 <CardContent className="p-5">
-                  <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training — 4 Week Impact</h3>
+                  <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training 4 Week Impact</h3>
                   <div className="space-y-6">
                     {ptVsSoloData.map((d) => (
                       <div key={d.label}>

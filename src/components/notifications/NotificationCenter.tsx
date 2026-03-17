@@ -90,7 +90,7 @@ export function NotificationCenter({
               <EmptyState
                 icon={<CheckCircle2 className="w-6 h-6" />}
                 title="All clear"
-                description="No alerts — your facility is running smoothly"
+                description="No alerts your facility is running smoothly"
               />
             </div>
           )}

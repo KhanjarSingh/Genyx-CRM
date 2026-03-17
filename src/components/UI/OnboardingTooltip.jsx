@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
+
 import { X } from 'lucide-react';
 import { useLocation as useRouterLocation } from 'react-router-dom';
 
 const TOOLTIP_TEXT = {
-  '/': 'Your Facility Overview — a live snapshot of everything happening in your gym right now.',
+  '/': 'Your Facility Overview a live snapshot of everything happening in your gym right now.',
   '/live-activity': 'Monitor all zones in real time. Camera feeds update every 5 seconds and automatically flag form issues.',
   '/member-analytics': 'Your full member directory with AI-tracked form scores, churn risk, and visit patterns.',
-  '/training-quality': 'The Exercise Quality Index ranks your most-performed movements by coaching quality — with dollar values attached.',
+  '/training-quality': 'The Exercise Quality Index ranks your most-performed movements by coaching quality with dollar values attached.',
   '/revenue-sales': 'Track MRR, manage AI-generated PT leads, and see the direct revenue impact of Genyx.',
 };
 

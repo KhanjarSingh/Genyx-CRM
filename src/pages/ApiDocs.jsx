@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Code2, Lock, Mail } from 'lucide-react';
 import { Card, CardContent } from '../components/UI/Card';
+import { Code2, Lock, Mail } from 'lucide-react';
+
 import { Button } from '../components/UI/Button';
+import { useState } from 'react';
 
 export function ApiDocs() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export function ApiDocs() {
           </div>
           <h1 className="text-3xl font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter uppercase leading-tight">Genyx Developer API</h1>
           <p className="mt-2 text-sm font-bold text-gray-500 dark:text-[#94A3B8]">
-            Programmatic access to your facility intelligence — coming soon
+            Programmatic access to your facility intelligence coming soon
           </p>
         </div>
       </div>

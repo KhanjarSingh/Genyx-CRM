@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
-import { CheckCircle2, Clock, PlugZap, X, KeyRound } from 'lucide-react';
 import { Card, CardContent } from '../components/UI/Card';
+import { CheckCircle2, Clock, KeyRound, PlugZap, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
 import { Badge } from '../components/UI/Badge';
 import { Button } from '../components/UI/Button';
-import { useAppConfig } from '../context/AppConfigContext';
 import { OnboardingTooltip } from '../components/UI/OnboardingTooltip';
+import { useAppConfig } from '../context/AppConfigContext';
 
 const INTEGRATIONS = [
   { id: 'mindbody', name: 'Mindbody', description: 'Sync members & class bookings', status: 'coming_soon' },
@@ -68,7 +69,7 @@ export function Integrations() {
               <span className="text-[11px] font-black tracking-[4px] uppercase text-brand">GENYX Integrations</span>
             </div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-[#F1F5F9] tracking-tighter uppercase leading-tight">Integrations</h1>
-            <p className="text-xs text-gray-400 dark:text-[#94A3B8] font-bold uppercase tracking-widest mt-1">Connect your stack — payments, alerts, scheduling</p>
+            <p className="text-xs text-gray-400 dark:text-[#94A3B8] font-bold uppercase tracking-widest mt-1">Connect your stack payments, alerts, scheduling</p>
           </div>
         </div>
       </div>
