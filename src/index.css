@@ -1,10 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-brand: #059669;
-  --color-brand-hover: #10b981;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand: #0D9488;
+  --color-success: #16A34A;
+  --color-critical: #DC2626;
+  --color-warning: #D97706;
+  --color-info: #2563EB;
+
+  /* Dark theme semantic tokens */
+  --color-dark-bg: #0F172A;
+  --color-dark-surface: #1E293B;
+  --color-dark-card: #1E293B;
+  --color-dark-elevated: #334155;
+  --color-dark-border: #334155;
+  --color-dark-border-subtle: #1E293B;
+  --color-dark-text: #F1F5F9;
+  --color-dark-text-secondary: #94A3B8;
+  --color-dark-text-muted: #64748B;
+  --color-dark-hover: #334155;
+  --color-dark-input: #1E293B;
 }
 
-body {
-  background-color: #ffffff;
+@layer base {
+  body {
+    @apply bg-[#f8f9fb] text-slate-900 antialiased transition-colors duration-200;
+  }
+  .dark body {
+    @apply bg-dark-bg text-dark-text;
+  }
+
+  /* Smooth theme transition for all elements */
+  .dark * {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Global dark mode input styling */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply bg-dark-input border-dark-border text-dark-text placeholder:text-dark-text-muted;
+  }
+
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    @apply border-brand ring-brand/30;
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .dark ::-webkit-scrollbar-track {
+    background: var(--color-dark-bg);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--color-dark-elevated);
+    border-radius: 4px;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-dark-text-muted);
+  }
 }

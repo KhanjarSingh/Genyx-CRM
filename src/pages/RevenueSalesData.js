@@ -1,8 +1,10 @@
 // ─── Section 1: Revenue Health KPIs ─────────────────────────────────────────
 export const revenueHealthKPIs = [
   { title: 'Monthly Recurring Revenue', value: '$65,240', trend: '+12.5%', positive: true, color: 'emerald' },
+  { title: 'CAC (Customer Acquisition Cost)', value: '$180', trend: '-$12', positive: true, color: 'amber' },
   { title: 'Personal Training Revenue', value: '$12,400', trend: '+18.0%', positive: true, color: 'blue' },
-  { title: 'Avg Revenue Per Member', value: '$42.50', trend: '+$1.20', positive: true, color: 'green' },
+  { title: 'ARPM (Avg Revenue Per Member)', value: '$42.50', trend: '+$1.20', positive: true, color: 'green' },
+  { title: 'MRR Growth Rate (MoM)', value: '6.2%', trend: '+1.1%', positive: true, color: 'emerald' },
   { title: 'Predicted Next Month', value: '$68,100', trend: '+4.3%', positive: true, color: 'amber' },
 ];
 

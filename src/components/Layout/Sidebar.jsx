@@ -1,17 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Activity, 
-  Users, 
-  Dumbbell, 
-  TrendingUp, 
-  FileText, 
-  Server, 
+import {
+  LayoutDashboard,
+  Activity,
+  Users,
+  Dumbbell,
+  TrendingUp,
+  FileText,
+  Server,
+  PlugZap,
   Settings,
   X
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useAppConfig } from '../../context/AppConfigContext';
 
 const navigation = [
   { name: 'Facility Overview', href: '/', icon: LayoutDashboard },
@@ -21,11 +24,20 @@ const navigation = [
   { name: 'Revenue & Sales', href: '/revenue-sales', icon: TrendingUp },
   { name: 'Reports', href: '/reports', icon: FileText },
   { name: 'System Health', href: '/health', icon: Server },
+  { name: 'Integrations', href: '/integrations', icon: PlugZap },
   { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Corporate Overview', href: '/corporate', icon: LayoutDashboard },
 ];
 
 export function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const location = useLocation();
+  const { currentUser, permissionsByRole } = useAuth();
+  const { branding } = useAppConfig();
+  const perms = permissionsByRole[currentUser.role];
+  const visibleNav = navigation.filter((item) => {
+    if (perms.hiddenSidebarItems.includes(item.name)) return false;
+    return perms.allowedRoutes.includes(item.href);
+  });
 
   // Close sidebar on route change on mobile
   useEffect(() => {
@@ -36,7 +48,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     <>
       {/* Mobile backdrop */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-gray-900/80 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -44,16 +56,22 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
       {/* Sidebar component */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 flex flex-col border-r border-gray-200 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-full lg:z-auto",
+        "fixed inset-y-0 left-0 z-50 w-64 flex flex-col border-r border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-full lg:z-auto",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100 shrink-0">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">
-            GENYX <span className="text-[#059669]">CRM</span>
-          </h1>
-          <button 
-            type="button" 
-            className="lg:hidden -mr-2 p-2 text-gray-400 hover:text-gray-500"
+        <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100 dark:border-dark-border shrink-0">
+          <div className="flex items-center gap-3">
+            {branding.logoDataUrl ? (
+              <img src={branding.logoDataUrl} alt={branding.appName} className="h-8 w-auto max-w-[140px] object-contain" />
+            ) : (
+              <h1 className="text-xl font-black tracking-tight text-gray-900 dark:text-dark-text uppercase">
+                {(branding.appName || 'Genyx CRM').split(' ').slice(0, 2).join(' ')}
+              </h1>
+            )}
+          </div>
+          <button
+            type="button"
+            className="lg:hidden -mr-2 p-2 text-gray-400 dark:text-dark-text-secondary hover:text-gray-500 dark:hover:text-dark-text"
             onClick={() => setSidebarOpen(false)}
           >
             <span className="sr-only">Close sidebar</span>
@@ -62,7 +80,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="space-y-1 px-3">
-            {navigation.map((item) => {
+            {visibleNav.map((item) => {
               const isActive = location.pathname === item.href;
               return (
                 <Link
@@ -70,14 +88,14 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
                   to={item.href}
                   className={cn(
                     isActive
-                      ? 'bg-gray-50 text-[#059669]'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900',
+                      ? 'bg-gray-50 dark:bg-dark-elevated text-brand'
+                      : 'text-gray-700 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-elevated hover:text-gray-900 dark:hover:text-dark-text',
                     'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors'
                   )}
                 >
                   <item.icon
                     className={cn(
-                      isActive ? 'text-[#059669]' : 'text-gray-400 group-hover:text-gray-500',
+                      isActive ? 'text-brand' : 'text-gray-400 dark:text-dark-text-muted group-hover:text-gray-500 dark:group-hover:text-dark-text-secondary',
                       'mr-3 h-5 w-5 flex-shrink-0 transition-colors'
                     )}
                     aria-hidden="true"

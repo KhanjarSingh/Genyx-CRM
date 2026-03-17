@@ -1,0 +1,36 @@
+export const demoProfiles = {
+  boutique: {
+    id: 'boutique',
+    label: 'Boutique',
+    members: 200,
+    facilities: 1,
+    trainers: 3,
+    zones: 2,
+    monthlyRevenueINR: 420000,
+    avgFormScore: 6.4,
+    churnRate: 38,
+  },
+  midMarket: {
+    id: 'midMarket',
+    label: 'Mid-Market',
+    members: 1500,
+    facilities: 3,
+    trainers: 12,
+    zones: 8,
+    monthlyRevenueINR: 2800000,
+    avgFormScore: 6.9,
+    churnRate: 32,
+  },
+  enterprise: {
+    id: 'enterprise',
+    label: 'Enterprise',
+    members: 8000,
+    facilities: 15,
+    trainers: 50,
+    zones: 25,
+    monthlyRevenueINR: 14000000,
+    avgFormScore: 7.1,
+    churnRate: 28,
+  },
+};
+
