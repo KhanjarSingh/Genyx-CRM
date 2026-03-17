@@ -1,30 +1,68 @@
-import { useState, useMemo, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowRight,
+  ArrowUpRight,
+  Award,
+  BarChart3,
+  Briefcase,
+  CheckCircle2,
+  ChevronRight,
+  CreditCard,
+  DollarSign,
+  Filter,
+  LineChart as LucideLineChart,
+  PieChart as LucidePieChart,
+  MessageSquare,
+  MoreHorizontal,
+  MoreVertical,
+  Plus,
+  ShieldAlert,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  UserPlus,
+  Users,
+  Zap
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  XAxis,
+  YAxis
+} from 'recharts';
 import { Card, CardContent } from '../components/UI/Card';
+import {
+  churnRiskStats,
+  genyxImpactStats,
+  leadFunnelData,
+  pipelineLeads,
+  recentConversions,
+  revenueBreakdownData,
+  revenueHealthKPIs,
+  revenueTrendData,
+  trainerDetailedLeaderboard,
+  upgradeOpportunities
+} from './RevenueSalesData';
+import { useMemo, useRef, useState } from 'react';
+
 import { Badge } from '../components/UI/Badge';
 import { Button } from '../components/UI/Button';
-import {
-  TrendingUp, TrendingDown, DollarSign, Users, CreditCard,
-  ArrowUpRight, ArrowDownRight, Target, Zap, ShieldAlert,
-  AlertTriangle, CheckCircle2, ChevronRight, MessageSquare,
-  BarChart3, LineChart as LucideLineChart, Briefcase, Award,
-  PieChart as LucidePieChart, Filter, Plus, ArrowRight, UserPlus,
-  MoreVertical, MoreHorizontal
-} from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer, LineChart, Line, Area, AreaChart, PieChart, Pie, Cell
-} from 'recharts';
-import {
-  revenueHealthKPIs, revenueTrendData, genyxImpactStats,
-  pipelineLeads, revenueBreakdownData, leadFunnelData,
-  trainerDetailedLeaderboard, upgradeOpportunities,
-  churnRiskStats, recentConversions
-} from './RevenueSalesData';
-import { useLocation } from '../context/LocationContext';
-import { formatCurrency } from '../utils/currency';
-import { OnboardingTooltip } from '../components/UI/OnboardingTooltip';
 import { EmptyState } from '../components/UI/EmptyState';
+import { OnboardingTooltip } from '../components/UI/OnboardingTooltip';
+import { formatCurrency } from '../utils/currency';
+import { useLocation } from '../context/LocationContext';
 import { useNavigate } from 'react-router-dom';
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
@@ -217,13 +255,13 @@ export function RevenueSales() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <DollarSign className="w-4 h-4 text-brand" />
-              <span className="text-[11px] font-bold tracking-[4px] uppercase text-brand">GENYX Revenue Intelligence</span>
+              <span className="text-[11px] font-bold tracking-[4px] uppercase text-brand">GENYX Revenue Insights</span>
             </div>
             <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-[#F1F5F9] sm:text-3xl sm:tracking-tight">
               Revenue & Sales
             </h1>
             <p className="mt-2 text-sm leading-normal text-gray-500 dark:text-[#94A3B8]">
-              Movable grid · smart pipeline · coaching ROI
+              Flexible pipeline, smart tracking, and coaching revenue insights
             </p>
           </div>
           <div className="flex items-center gap-3">

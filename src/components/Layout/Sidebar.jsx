@@ -1,26 +1,27 @@
-import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard,
   Activity,
-  Users,
   Dumbbell,
-  TrendingUp,
   FileText,
-  Server,
+  LayoutDashboard,
   PlugZap,
+  Server,
   Settings,
+  TrendingUp,
+  Users,
   X
 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+
 import { cn } from '../../lib/utils';
-import { useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useAppConfig } from '../../context/AppConfigContext';
+import { useAuth } from '../../context/AuthContext';
+import { useEffect } from 'react';
 
 const navigation = [
   { name: 'Facility Overview', href: '/', icon: LayoutDashboard },
   { name: 'Live Activity', href: '/live-activity', icon: Activity },
   { name: 'Member Analytics', href: '/member-analytics', icon: Users },
-  { name: 'Training Intelligence', href: '/training-quality', icon: Dumbbell },
+  { name: 'Training Insights', href: '/training-quality', icon: Dumbbell },
   { name: 'Revenue & Sales', href: '/revenue-sales', icon: TrendingUp },
   { name: 'Reports', href: '/reports', icon: FileText },
   { name: 'System Health', href: '/health', icon: Server },

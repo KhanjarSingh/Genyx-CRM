@@ -124,7 +124,7 @@ export function TrainingIntelligence() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Brain className="w-4 h-4 text-[#059669]" />
-              <span className="text-[11px] font-bold tracking-[4px] uppercase text-[#059669]">GENYX Training Intelligence</span>
+              <span className="text-[11px] font-bold tracking-[4px] uppercase text-[#059669]">GENYX Training Insights</span>
             </div>
             <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-dark-text sm:text-3xl sm:tracking-tight">
               Coaching Command Center
@@ -148,7 +148,7 @@ export function TrainingIntelligence() {
         {/* ── SECTION 1: FACILITY INTELLIGENCE ────────────────────────────── */}
         <section>
           <div className="mb-6">
-            <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Facility Intelligence</h2>
+            <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Facility Insights</h2>
             <p className="text-xs text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest mt-1">High-level coaching & safety KPIs</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -180,8 +180,8 @@ export function TrainingIntelligence() {
         {/* ── SECTION 2: MEMBER PROGRESS ──────────────────────────────────── */}
         <section>
           <div className="mb-6">
-            <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Member Progress Intelligence</h2>
-            <p className="text-xs text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest mt-1">Movement improvement velocity & engagement</p>
+            <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Member Progress Insights</h2>
+            <p className="text-xs text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest mt-1">Movement improvement Speed & engagement</p>
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
@@ -224,19 +224,19 @@ export function TrainingIntelligence() {
             <div className="flex flex-col gap-6">
               <Card className="border-gray-100 dark:border-dark-border shadow-sm">
                 <CardContent className="p-6">
-                  <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest mb-4">Performance Velocity</p>
+                  <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest mb-4">Performance Speed</p>
                   <div className="text-5xl font-black text-gray-900 dark:text-dark-text tracking-tighter tabular-nums mb-1">{memberProgressStats.avgVelocity}</div>
                   <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest">{memberProgressStats.velocityDesc}</p>
 
                   <div className="mt-8 pt-6 border-t border-gray-50 dark:border-dark-border flex items-center justify-between">
-                     <span className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest">Coaching ROI Impact</span>
+                     <span className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest">Coaching ROI Progress</span>
                      <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums">{memberProgressStats.coachedImpact}</span>
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-gray-100 dark:border-dark-border shadow-sm">
                 <CardContent className="p-6">
-                  <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest mb-4">Coaching Signals</p>
+                  <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest mb-4">Coaching Flags</p>
                   <div className="space-y-4">
                     {[
                       { label: 'Form scores slipping', val: memberProgressStats.membersSlipping, cls: 'text-amber-600 dark:text-amber-400 font-black' },
@@ -280,7 +280,7 @@ export function TrainingIntelligence() {
                       <th className="px-6 py-4 text-left font-black tracking-[2px]">6-mo Trend</th>
                       <th className="px-6 py-4 text-left font-black tracking-[2px]">Cohort</th>
                       <th className="px-6 py-4 text-left font-black tracking-[2px] hidden md:table-cell">Primary IQ Gap</th>
-                      <th className="px-6 py-4 text-left font-black tracking-[2px] hidden lg:table-cell">Intelligence Lead</th>
+                      <th className="px-6 py-4 text-left font-black tracking-[2px] hidden lg:table-cell">Insights Lead</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50 dark:divide-dark-border text-xs font-bold text-gray-900 dark:text-dark-text normal-case tracking-normal">
@@ -414,7 +414,7 @@ export function TrainingIntelligence() {
 
               <Card className="border-gray-100 dark:border-dark-border shadow-sm mt-4 rounded-2xl overflow-hidden">
                 <CardContent className="p-5">
-                  <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training 4 Week Impact</h3>
+                  <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training 4 Week Progress</h3>
                   <div className="space-y-6">
                     {ptVsSoloData.map((d) => (
                       <div key={d.label}>
@@ -520,7 +520,7 @@ export function TrainingIntelligence() {
         {/* ── SUPPLEMENTAL INSIGHTS ───────────────────────────────────────── */}
         <section>
           <div className="mb-5">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-dark-text">Additional Intelligence</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-dark-text">Additional Insights</h2>
             <p className="text-xs text-gray-400 dark:text-dark-text-secondary mt-0.5">Supplemental data to support class programming</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
