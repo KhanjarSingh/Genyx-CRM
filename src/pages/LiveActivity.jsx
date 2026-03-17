@@ -107,37 +107,6 @@ export function LiveActivity() {
         </CardContent>
       </Card>
 
-      {/* Simulated Camera Grid */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Camera Grid</CardTitle>
-          <CardDescription>Live feeds with intelligence overlays</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-video bg-gray-900 rounded-lg relative overflow-hidden group">
-                {/* Simulated feed placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Camera className="h-8 w-8 text-gray-600 mb-2" />
-                </div>
-                <div className="absolute top-3 left-3 flex gap-2">
-                   <Badge variant="outline" className="bg-black/50 text-white border-0 backdrop-blur-sm">Cam {i}</Badge>
-                   <Badge variant="success" className="bg-emerald-500/80 text-white border-0 backdrop-blur-sm">LIVE</Badge>
-                </div>
-                {i === 2 && (
-                  <div className="absolute border-2 border-[#059669] rounded bg-[#059669]/20 w-24 h-48 top-4 left-1/4 animate-pulse">
-                    <span className="absolute -top-6 left-0 bg-[#059669] text-emerald-950 text-[10px] font-bold px-1 py-0.5 rounded">Form Correction</span>
-                  </div>
-                )}
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-white text-xs font-medium">Free Weights Zone A</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
