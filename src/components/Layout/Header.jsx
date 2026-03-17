@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { Bell, Search, User, Menu, HelpCircle } from 'lucide-react';
+import { Bell, HelpCircle, Menu, Search, User } from 'lucide-react';
+
+import { ImpactScore } from '../Layout/ImpactScore';
 import { LocationSwitcher } from './LocationSwitcher';
-import { ImpactScore } from '../layout/ImpactScore';
+import { NotificationCenter } from '../notifications/NotificationCenter';
+import { resetTooltipsSeen } from '../UI/OnboardingTooltip';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../context/LocationContext';
 import { useNotifications } from '../../context/NotificationContext';
-import { NotificationCenter } from '../notifications/NotificationCenter';
-import { resetTooltipsSeen } from '../UI/OnboardingTooltip';
+import { useState } from 'react';
 
 export function Header({ setSidebarOpen }) {
   const [showNotifications, setShowNotifications] = useState(false);
