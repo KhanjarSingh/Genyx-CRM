@@ -376,7 +376,7 @@ export function RevenueSales() {
                               {[1, 2, 3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#1A1B2E] bg-slate-200 dark:bg-slate-700 shadow-sm" />)}
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                       {pipeline.filter(l => l.status === status).length === 0 && (
                         <motion.div
@@ -388,7 +388,7 @@ export function RevenueSales() {
                             <UserPlus className="w-6 h-6 text-slate-300" />
                           </div>
                           <span className="text-[11px] font-black text-slate-300 uppercase tracking-[3px]">Drop Opportunity</span>
-                        </div>
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
