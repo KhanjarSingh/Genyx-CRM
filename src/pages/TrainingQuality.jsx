@@ -1,0 +1,516 @@
+import { useState } from 'react';
+import { Card, CardContent } from '../components/UI/Card';
+import { Badge } from '../components/UI/Badge';
+import { Button } from '../components/UI/Button';
+import {
+  TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Users, Activity,
+  ChevronRight, Target, ArrowUpRight, ArrowDownRight, Zap, Star,
+  Dumbbell, Brain, CheckCircle2
+} from 'lucide-react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
+  ResponsiveContainer, Legend, LineChart, Line, Area, AreaChart, Cell
+} from 'recharts';
+import {
+  gymHealthKPIs, progressTrendData, memberProgressStats, memberSegmentData,
+  exerciseQualityData, biomechanicsData, membersAtRiskData,
+  trainerPerformanceData, ptVsSoloData, weeklyActionPlan, supplementalStats
+} from './TrainingQualityData';
+
+// ─── Tiny helpers ──────────────────────────────────────────────────────────────
+
+const ScoreColor = (s) => s >= 65 ? '#10b981' : s >= 50 ? '#f59e0b' : '#ef4444';
+
+function MiniBar({ score }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-full rounded-full transition-all" style={{ width: `${score}%`, backgroundColor: ScoreColor(score) }} />
+      </div>
+      <span className="text-xs font-semibold w-6 text-right" style={{ color: ScoreColor(score) }}>{score}</span>
+    </div>
+  );
+}
+
+function BioCell({ value }) {
+  if (value > 50) return <td className="px-3 py-3.5 text-center"><span className="inline-flex items-center justify-center w-10 h-6 rounded bg-red-100 text-red-700 text-xs font-bold">{value}%</span></td>;
+  if (value > 25) return <td className="px-3 py-3.5 text-center"><span className="inline-flex items-center justify-center w-10 h-6 rounded bg-amber-100 text-amber-700 text-xs font-semibold">{value}%</span></td>;
+  if (value > 0)  return <td className="px-3 py-3.5 text-center text-xs text-gray-400">{value}%</td>;
+  return <td className="px-3 py-3.5 text-center text-gray-200 text-xs">—</td>;
+}
+
+const PLAN_STYLES = {
+  critical: { accent: '#ef4444', bg: 'bg-red-50',     border: 'border-red-200/60',    label: 'Critical',     labelCls: 'bg-red-500 text-white',      icon: ShieldAlert },
+  warning:  { accent: '#f59e0b', bg: 'bg-amber-50',   border: 'border-amber-200/60',  label: 'High Priority', labelCls: 'bg-amber-500 text-white',    icon: AlertTriangle },
+  positive: { accent: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-200/60',label: 'Maintain',     labelCls: 'bg-emerald-500 text-white',   icon: CheckCircle2 },
+};
+
+const KPI_CONFIGS = {
+  emerald: { iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', valueCls: 'text-gray-900', trendCls: 'text-emerald-600' },
+  blue:    { iconBg: 'bg-blue-100',    iconColor: 'text-blue-600',    valueCls: 'text-gray-900', trendCls: 'text-emerald-600' },
+  green:   { iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', valueCls: 'text-gray-900', trendCls: 'text-emerald-600' },
+  amber:   { iconBg: 'bg-amber-100',   iconColor: 'text-amber-600',   valueCls: 'text-gray-900', trendCls: 'text-amber-600'   },
+  orange:  { iconBg: 'bg-orange-100',  iconColor: 'text-orange-600',  valueCls: 'text-gray-900', trendCls: 'text-orange-600'  },
+  red:     { iconBg: 'bg-red-100',     iconColor: 'text-red-500',     valueCls: 'text-red-600',  trendCls: 'text-red-500'     },
+};
+
+const KPI_ICONS = {
+  emerald: Target, blue: Activity, green: TrendingUp, amber: Users, orange: Zap, red: ShieldAlert,
+};
+
+// ─── Main Component ────────────────────────────────────────────────────────────
+
+export function TrainingIntelligence() {
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fb]">
+
+      {/* ── Sticky page header ─────────────────────────────────────────── */}
+      <div className="bg-white border-b border-gray-100 px-6 py-5 mb-0 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Brain className="w-4 h-4 text-[#059669]" />
+              <span className="text-[11px] font-bold tracking-[4px] uppercase text-[#059669]">GENYX Training Intelligence</span>
+            </div>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase leading-tight">Coaching Command Center</h1>
+            <p className="text-sm text-gray-500 mt-1 font-bold uppercase tracking-widest">Movement Quality · Coaching ROI · Injury Risk Map</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="flex items-center gap-1.5 text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-full uppercase tracking-widest">
+              <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
+              Live Architecture
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-6 py-8 space-y-12">
+
+        {/* ── SECTION 1: FACILITY INTELLIGENCE ────────────────────────────── */}
+        <section>
+          <div className="mb-6">
+            <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Facility Intelligence</h2>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">High-level coaching & safety KPIs</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+            {gymHealthKPIs.map((kpi, i) => {
+              const cfg = KPI_CONFIGS[kpi.color] || KPI_CONFIGS.emerald;
+              const Icon = KPI_ICONS[kpi.color] || KPI_ICONS.emerald;
+              return (
+                <Card key={i} className="border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 bg-white">
+                  <CardContent className="p-5">
+                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${cfg.iconBg} mb-4 shadow-sm`}>
+                      <Icon className={`w-5 h-5 ${cfg.iconColor}`} />
+                    </div>
+                    <p className="text-[10px] font-black text-gray-400 leading-tight mb-2 uppercase tracking-widest">{kpi.title}</p>
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className={`text-3xl font-black tracking-tighter tabular-nums ${cfg.valueCls}`}>{kpi.value}</span>
+                      <span className="text-[10px] font-black text-gray-300 uppercase">{kpi.unit}</span>
+                    </div>
+                    <p className={`text-[10px] font-black ${cfg.trendCls} flex items-center gap-1 uppercase tracking-widest`}>
+                      {kpi.positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                      {kpi.trend}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── SECTION 2: MEMBER PROGRESS ──────────────────────────────────── */}
+        <section>
+          <div className="mb-6">
+            <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Member Progress Intelligence</h2>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Movement improvement velocity & engagement</p>
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+            {/* Chart */}
+            <Card className="xl:col-span-2 border-gray-100 shadow-sm bg-white">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">Performance Tier Trend</h3>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Facility performance shift over 6 months</p>
+                  </div>
+                  <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />High</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]" />Growing</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.3)]" />Stalled</span>
+                  </div>
+                </div>
+                <div className="h-[250px] mt-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={progressTrendData} margin={{ top: 5, right: 5, left: -28, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient>
+                        <linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#f59e0b" stopOpacity={0.15}/><stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/></linearGradient>
+                        <linearGradient id="gRed"   x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#f87171" stopOpacity={0.15}/><stop offset="95%" stopColor="#f87171" stopOpacity={0}/></linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }} unit="%" />
+                      <RechartsTooltip formatter={(v) => `${v}%`} contentStyle={{ borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: '0 8px 30px rgba(0,0,0,0.06)', fontSize: '11px', fontWeight: 700 }} />
+                      <Area type="monotone" dataKey="great"     name="High Performer" stroke="#10b981" strokeWidth={3} fill="url(#gGreen)" dot={false} activeDot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
+                      <Area type="monotone" dataKey="improving" name="Progressing"    stroke="#f59e0b" strokeWidth={3} fill="url(#gAmber)" dot={false} activeDot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
+                      <Area type="monotone" dataKey="needsHelp" name="Stalled"      stroke="#f87171" strokeWidth={3} fill="url(#gRed)"   dot={false} activeDot={{ r: 4, strokeWidth: 2, fill: '#fff' }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Stats sidebar */}
+            <div className="flex flex-col gap-6">
+              <Card className="border-gray-100 shadow-sm bg-white">
+                <CardContent className="p-6">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Performance Velocity</p>
+                  <div className="text-5xl font-black text-gray-900 tracking-tighter tabular-nums mb-1">{memberProgressStats.avgVelocity}</div>
+                  <p className="text-[11px] text-emerald-600 font-bold uppercase tracking-widest">{memberProgressStats.velocityDesc}</p>
+                  
+                  <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
+                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Coaching ROI Impact</span>
+                     <span className="text-xl font-black text-emerald-600 tabular-nums">{memberProgressStats.coachedImpact}</span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-100 shadow-sm bg-white">
+                <CardContent className="p-6">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Coaching Signals</p>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Form scores slipping', val: memberProgressStats.membersSlipping, cls: 'text-amber-600 font-black' },
+                      { label: 'High injury risk', val: memberProgressStats.highCancelRisk, cls: 'text-red-500 font-black' },
+                      { label: 'Session Consistency', val: memberProgressStats.trainingConsistency, cls: 'text-emerald-600 font-black' },
+                    ].map(r => (
+                      <div key={r.label} className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wide">
+                        <span className="text-gray-500">{r.label}</span>
+                        <span className={r.cls}>{r.val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION 3: EXERCISE INTELLIGENCE ────────────────────────────── */}
+        <section>
+          <div className="mb-6">
+            <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Movement IQ Matrix</h2>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Facility-wide movement profile ranked by quality</p>
+          </div>
+          <Card className="border-gray-100 shadow-sm overflow-hidden bg-white rounded-2xl">
+            <div className="overflow-x-auto text-[11px] font-black uppercase tracking-widest text-gray-400">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50/80 border-b border-gray-100">
+                    <th className="px-6 py-4 text-left font-black tracking-[2px]">Rank</th>
+                    <th className="px-6 py-4 text-left font-black tracking-[2px]">Movement</th>
+                    <th className="px-6 py-4 text-left font-black tracking-[2px] w-48">IQ Score</th>
+                    <th className="px-6 py-4 text-left font-black tracking-[2px]">Cohort</th>
+                    <th className="px-6 py-4 text-left font-black tracking-[2px] hidden md:table-cell">Primary IQ Gap</th>
+                    <th className="px-6 py-4 text-left font-black tracking-[2px] hidden lg:table-cell">Intelligence Lead</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 text-xs font-bold text-gray-900 normal-case tracking-normal">
+                  {exerciseQualityData.map((ex) => (
+                    <tr key={ex.rank} className="hover:bg-emerald-50/20 transition-all group">
+                      <td className="px-6 py-5 w-16">
+                        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-[11px] font-black shrink-0 ${ex.status === 'bad' ? 'bg-red-50 text-red-600' : ex.status === 'ok' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>{ex.rank}</span>
+                      </td>
+                      <td className="px-6 py-5 min-w-[140px] font-black text-sm uppercase tracking-tight group-hover:text-emerald-700 transition-colors truncate">{ex.name}</td>
+                      <td className="px-6 py-5 min-w-[180px]">
+                        <MiniBar score={ex.score} />
+                      </td>
+                      <td className="px-6 py-5 min-w-[100px] text-gray-500 font-black uppercase tracking-widest text-[10px] truncate">{ex.members} members</td>
+                      <td className="px-6 py-5 hidden md:table-cell min-w-[150px]">
+                        <span className="text-xs text-gray-400 font-bold leading-relaxed line-clamp-1 italic">"{ex.keyIssue}"</span>
+                      </td>
+                      <td className="px-6 py-5 hidden lg:table-cell min-w-[150px]">
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded truncate block text-center ${ex.status === 'bad' ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-400'}`}>{ex.suggestion}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </section>
+
+        {/* ── SECTIONS 4 + 5 GRID ──────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+
+          {/* Section 4: Biomechanics */}
+          <section className="xl:col-span-3">
+            <div className="mb-6">
+              <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Biomechanics Risk Map</h2>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">% of reps with detected joint deviation</p>
+            </div>
+            <Card className="border-gray-100 shadow-sm overflow-hidden bg-white rounded-2xl">
+              <div className="overflow-x-auto text-[10px] font-black uppercase tracking-[2px] text-gray-400">
+                <table className="w-full min-w-[520px]">
+                  <thead>
+                    <tr className="bg-gray-50/80 border-b border-gray-100">
+                      <th className="px-6 py-4 text-left font-black tracking-[2px]">Movement</th>
+                      <th className="px-3 py-4 text-center font-black tracking-[2px]" colSpan={2}>Knee</th>
+                      <th className="px-3 py-4 text-center font-black tracking-[2px] border-l border-gray-100" colSpan={2}>Hip</th>
+                      <th className="px-3 py-4 text-center font-black tracking-[2px] border-l border-gray-100" colSpan={2}>Shoulder</th>
+                    </tr>
+                    <tr className="border-b border-gray-100 bg-gray-50/20">
+                      <th className="px-6 py-2"></th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold">L</th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold">R</th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold border-l border-gray-100">L</th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold">R</th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold border-l border-gray-100">L</th>
+                      <th className="px-3 py-2 text-center text-gray-300 font-bold">R</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50 text-xs font-bold text-gray-900">
+                    {biomechanicsData.map((row, i) => (
+                      <tr key={i} className="hover:bg-emerald-50/20 transition-all group">
+                        <td className="px-6 py-4 font-black uppercase tracking-tight text-gray-900">{row.exercise}</td>
+                        <BioCell value={row.lKnee} /><BioCell value={row.rKnee} />
+                        <BioCell value={row.lHip} /><BioCell value={row.rHip} />
+                        <BioCell value={row.lShoulder} /><BioCell value={row.rShoulder} />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-wrap gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-100 border border-red-200" /> &gt;50% Urgent Intervention</span>
+                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-200" /> 26–50% Performance Monitor</span>
+                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-gray-100 border border-gray-200" /> &lt;25% Optimal Standard</span>
+              </div>
+            </Card>
+
+            {/* ── SECTION 6: TRAINER PERFORMANCE (MOVED TO BALANCE) ─────────────── */}
+            <div className="mt-12">
+              <div className="mb-5">
+                <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Trainer IQ Velocity</h2>
+                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Average form score improvement per coach</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {trainerPerformanceData.map((t, i) => {
+                  const pct = Math.round((t.improvement / 30) * 100);
+                  const color = t.improvement >= 20 ? '#10b981' : t.improvement >= 12 ? '#f59e0b' : '#ef4444';
+                  return (
+                    <Card key={i} className="border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 bg-white rounded-2xl">
+                      <CardContent className="p-5">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm" style={{ backgroundColor: color }}>
+                            {t.name.split(' ')[1]?.charAt(0) || t.name.charAt(0)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight truncate">{t.name}</p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t.members} members</p>
+                          </div>
+                          <div className="ml-auto text-right">
+                            <span className="text-2xl font-black tracking-tighter" style={{ color }}>+{t.improvement}</span>
+                            <p className="text-[10px] text-gray-300 font-bold uppercase">pts avg</p>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-50 rounded-full h-1.5 mb-2 overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
+                        </div>
+                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Specialty: {t.specialty}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <Card className="border-gray-100 shadow-sm mt-4 bg-white rounded-2xl overflow-hidden">
+                <CardContent className="p-5">
+                  <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">PT vs. Solo Training — 4 Week Impact</h3>
+                  <div className="space-y-6">
+                    {ptVsSoloData.map((d) => (
+                      <div key={d.label}>
+                        <div className="flex items-center justify-between text-[11px] mb-2 font-black uppercase tracking-widest">
+                          <span className="text-gray-400">{d.label}</span>
+                          <span className="font-black" style={{ color: d.fill }}>+{d.improvement} pts</span>
+                        </div>
+                        <div className="w-full bg-gray-50 rounded-full h-2 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${(d.improvement / 25) * 100}%`, backgroundColor: d.fill }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* Section 5: Members who need attention */}
+          <section className="xl:col-span-2">
+            <div className="mb-6">
+              <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Intelligence Alerts</h2>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">High-priority coaching intervention leads</p>
+            </div>
+            <Card className="border-gray-100 shadow-sm h-full bg-white rounded-2xl overflow-hidden">
+              <CardContent className="p-0">
+                <div className="divide-y divide-gray-50">
+                  {membersAtRiskData.map((m, i) => (
+                    <div key={i} className="flex items-start gap-4 px-6 py-5 hover:bg-emerald-50/20 transition-all group">
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 font-black text-sm shrink-0 border border-gray-200 group-hover:bg-white transition-colors">
+                        {m.name.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{m.name}</p>
+                          <Badge className={`${m.risk === 'High' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'} text-[9px] font-black px-2 py-0.5 border-none uppercase tracking-widest`}>
+                            {m.risk} RISK
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-gray-500 font-bold italic leading-relaxed mb-3">"{m.issue}"</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded uppercase tracking-widest">{m.exercise}</span>
+                          <span className="text-[11px] font-black tabular-nums" style={{ color: ScoreColor(m.score) }}>IQ: {m.score}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-6 py-5 border-t border-gray-100 bg-gray-50/20">
+                  <Button size="sm" variant="outline" className="w-full text-[10px] font-black h-10 uppercase tracking-widest text-[#059669] border-emerald-200 hover:bg-emerald-50 shadow-none">
+                    View Full Alert Queue
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        </div>
+
+
+        {/* ── SECTION 7: WEEKLY ACTION PLAN ───────────────────────────────── */}
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-semibold text-gray-900">Weekly Coaching Action Plan</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Auto-generated priorities · Week of Mar 10–16, 2026</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            {weeklyActionPlan.map((item) => {
+              const s = PLAN_STYLES[item.level];
+              const Icon = s.icon;
+              return (
+                <Card key={item.priority} className={`border shadow-sm ${s.border} ${s.bg} hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}>
+                  <CardContent className="p-5 flex flex-col h-full gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${s.labelCls}`}>{s.label}</span>
+                      <Icon className="w-4 h-4 text-gray-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug">{item.title}</h3>
+                      <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">{item.reason}</p>
+                    </div>
+                    <ul className="flex-1 space-y-1.5 mt-1">
+                      {item.actions.map((a, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[11px] text-gray-600 leading-snug">
+                          <ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-gray-300" />{a}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="pt-3 border-t border-gray-200/70 flex flex-col gap-1.5">
+                      <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                        <Target className="w-3 h-3" /><span className="font-medium">{item.impact}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                        <Users className="w-3 h-3" /><span>{item.owner}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── SUPPLEMENTAL INSIGHTS ───────────────────────────────────────── */}
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-semibold text-gray-900">Additional Intelligence</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Supplemental data to support class programming</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            {/* Injury Risk Index */}
+            <Card className="bg-slate-900 text-white border-slate-800 shadow-lg relative overflow-hidden">
+              <div className="absolute right-4 top-4 opacity-[0.07]"><ShieldAlert className="w-28 h-28" /></div>
+              <CardContent className="p-6 relative z-10">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-4">Facility Safety Index</p>
+                <div className="flex items-end gap-2 mb-3">
+                  <span className="text-5xl font-bold tracking-tighter">{supplementalStats.injuryRiskScore}</span>
+                  <span className="text-lg text-slate-500 pb-1">/ 100</span>
+                </div>
+                <div className="flex items-center gap-2 mb-5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="text-xs font-semibold text-amber-400">{supplementalStats.injuryRiskLevel} Risk Profile</span>
+                </div>
+                <div className="w-full bg-slate-800 rounded-full h-1.5">
+                  <div className="bg-amber-400 h-1.5 rounded-full" style={{ width: `${supplementalStats.injuryRiskScore}%` }} />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Exercise Popularity */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardContent className="p-5">
+                <h3 className="text-sm font-semibold text-gray-800 mb-4">Exercise Popularity</h3>
+                <div className="space-y-3">
+                  {supplementalStats.exercisePopularity.map((ex, i) => {
+                    const max = supplementalStats.exercisePopularity[0].sessions;
+                    return (
+                      <div key={i}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="font-medium text-gray-700">{ex.exercise}</span>
+                          <span className="text-gray-400">{ex.sessions.toLocaleString()}</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-1.5">
+                          <div className="h-1.5 rounded-full bg-[#059669]" style={{ width: `${(ex.sessions / max) * 100}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Skill Distribution */}
+            <Card className="border-gray-100 shadow-sm">
+              <CardContent className="p-5">
+                <h3 className="text-sm font-semibold text-gray-800 mb-4">Member Skill Distribution</h3>
+                <div className="space-y-4">
+                  {supplementalStats.skillDistribution.map((s, i) => {
+                    const colors = ['bg-emerald-400', 'bg-blue-400', 'bg-purple-400'];
+                    const tColors = ['text-emerald-600', 'text-blue-600', 'text-purple-600'];
+                    return (
+                      <div key={i}>
+                        <div className="flex justify-between text-sm mb-1.5">
+                          <span className="font-medium text-gray-700">{s.label}</span>
+                          <span className={`font-bold ${tColors[i]}`}>{s.pct}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className={`h-2 rounded-full ${colors[i]}`} style={{ width: `${s.pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="mt-4 text-xs text-gray-400 bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg leading-snug text-blue-700">
+                  42% beginner base warrants a foundational movement course. Consider weekly beginner intro sessions.
+                </p>
+              </CardContent>
+            </Card>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
+}
