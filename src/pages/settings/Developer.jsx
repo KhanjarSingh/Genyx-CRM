@@ -36,7 +36,10 @@ export default function Developer() {
   const [events, setEventsState] = useState(['new_alert', 'pod_offline']);
   const [toast, setToast] = useState({ open: false, type: 'success', message: '' });
 
-  const webhooks = useMemo(() => getWebhooks(), [getWebhooks, open]);
+  const webhooks = useMemo(() => {
+    const savedWebhooks = getWebhooks();
+    return Array.isArray(savedWebhooks) ? savedWebhooks : [];
+  }, [getWebhooks, open]);
 
   const addWebhook = () => {
     const next = [
@@ -255,4 +258,3 @@ export default function Developer() {
     </div>
   );
 }
-

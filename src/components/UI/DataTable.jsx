@@ -57,11 +57,23 @@ function localKey(tableId, suffix) {
   return `genyx.table.${tableId}.${suffix}`;
 }
 
+function getColumnId(column, index) {
+  return column?.id ?? column?.key ?? `col-${index}`;
+}
+
+function getCellValue(column, row) {
+  if (typeof column?.accessor === 'function') return column.accessor(row);
+  if (typeof column?.accessor === 'string') return row?.[column.accessor];
+  if (typeof column?.key === 'string') return row?.[column.key];
+  return undefined;
+}
+
 export function DataTable({
   tableId,
   title,
   subtitle,
   data,
+  rows,
   columns,
   getRowId,
   bulkActions = [],
@@ -71,7 +83,17 @@ export function DataTable({
   className,
 }) {
   // columns: { id, header, accessor(row)->value, cell?(row)->node, sortable?, filterable?, width?, defaultVisible? }
-  const colById = useMemo(() => Object.fromEntries(columns.map(c => [c.id, c])), [columns]);
+  const safeColumns = useMemo(
+    () => (Array.isArray(columns) ? columns : []).map((column, index) => ({
+      ...column,
+      id: getColumnId(column, index),
+    })),
+    [columns]
+  );
+  const tableData = Array.isArray(data) ? data : Array.isArray(rows) ? rows : [];
+  const safeGetRowId = getRowId || ((row, index) => row?.id ?? index);
+  const safeDefaultViews = Array.isArray(defaultViews) ? defaultViews : [];
+  const colById = useMemo(() => Object.fromEntries(safeColumns.map(c => [c.id, c])), [safeColumns]);
 
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState([]);
@@ -81,7 +103,8 @@ export function DataTable({
 
   const [pageSize, setPageSize] = useState(() => {
     const saved = localStorage.getItem(localKey(tableId, 'pageSize'));
-    return saved ? Number(saved) : initialPageSize;
+    const parsed = saved ? Number(saved) : initialPageSize;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : initialPageSize;
   });
   const [page, setPage] = useState(1);
 
@@ -91,13 +114,23 @@ export function DataTable({
   // column visibility + ordering
   const [colOrder, setColOrder] = useState(() => {
     const saved = localStorage.getItem(localKey(tableId, 'colOrder'));
-    if (saved) return JSON.parse(saved);
-    return columns.map(c => c.id);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+    }
+    return safeColumns.map(c => c.id);
   });
   const [hiddenCols, setHiddenCols] = useState(() => {
     const saved = localStorage.getItem(localKey(tableId, 'hiddenCols'));
-    if (saved) return new Set(JSON.parse(saved));
-    return new Set(columns.filter(c => c.defaultVisible === false).map(c => c.id));
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return new Set(parsed);
+      } catch {}
+    }
+    return new Set(safeColumns.filter(c => c.defaultVisible === false).map(c => c.id));
   });
 
   const [showColMenu, setShowColMenu] = useState(false);
@@ -106,12 +139,17 @@ export function DataTable({
   // saved views (tabs)
   const [views, setViews] = useState(() => {
     const saved = localStorage.getItem(localKey(tableId, 'views'));
-    if (saved) return JSON.parse(saved);
-    return defaultViews;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+    }
+    return safeDefaultViews;
   });
   const [activeViewId, setActiveViewId] = useState(() => {
     const saved = localStorage.getItem(localKey(tableId, 'activeView'));
-    return saved || (defaultViews[0]?.id ?? 'default');
+    return saved || (safeDefaultViews[0]?.id ?? 'default');
   });
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveName, setSaveName] = useState('');
@@ -156,21 +194,21 @@ export function DataTable({
 
   const orderedCols = useMemo(() => {
     const ids = colOrder.filter(id => colById[id]);
-    const rest = columns.map(c => c.id).filter(id => !ids.includes(id));
+    const rest = safeColumns.map(c => c.id).filter(id => !ids.includes(id));
     return [...ids, ...rest].map(id => colById[id]).filter(Boolean).filter(c => !hiddenCols.has(c.id));
-  }, [colById, colOrder, columns, hiddenCols]);
+  }, [colById, colOrder, safeColumns, hiddenCols]);
 
   const filtered = useMemo(() => {
-    if (!filters.length) return data;
-    return data.filter(row => {
+    if (!filters.length) return tableData;
+    return tableData.filter(row => {
       return filters.every(f => {
         const col = colById[f.columnId];
         if (!col) return true;
-        const v = col.accessor(row);
+        const v = getCellValue(col, row);
         return applyFilter(v, f.op, f.value);
       });
     });
-  }, [colById, data, filters]);
+  }, [colById, tableData, filters]);
 
   const sorted = useMemo(() => {
     if (!sorts.length) return filtered;
@@ -179,8 +217,8 @@ export function DataTable({
       for (const s of sorts) {
         const col = colById[s.id];
         if (!col) continue;
-        const av = col.sortValue ? col.sortValue(a) : col.accessor(a);
-        const bv = col.sortValue ? col.sortValue(b) : col.accessor(b);
+        const av = col.sortValue ? col.sortValue(a) : getCellValue(col, a);
+        const bv = col.sortValue ? col.sortValue(b) : getCellValue(col, b);
         const dir = s.dir === 'asc' ? 1 : -1;
 
         // handle dates/numbers/strings
@@ -212,17 +250,17 @@ export function DataTable({
     setPage(1);
   }, [pageSize, filters, sorts]);
 
-  const allVisibleRowIds = useMemo(() => pageRows.map(r => getRowId(r)), [getRowId, pageRows]);
-  const allChecked = allVisibleRowIds.length > 0 && allVisibleRowIds.every(id => selected.has(id));
-  const someChecked = allVisibleRowIds.some(id => selected.has(id)) && !allChecked;
+  const resolvedVisibleRowIds = useMemo(() => pageRows.map((r, index) => safeGetRowId(r, index)), [pageRows, safeGetRowId]);
+  const allChecked = resolvedVisibleRowIds.length > 0 && resolvedVisibleRowIds.every(id => selected.has(id));
+  const someChecked = resolvedVisibleRowIds.some(id => selected.has(id)) && !allChecked;
 
   const toggleAll = () => {
     setSelected(prev => {
       const next = new Set(prev);
       if (allChecked) {
-        allVisibleRowIds.forEach(id => next.delete(id));
+        resolvedVisibleRowIds.forEach(id => next.delete(id));
       } else {
-        allVisibleRowIds.forEach(id => next.add(id));
+        resolvedVisibleRowIds.forEach(id => next.add(id));
       }
       return next;
     });
@@ -257,7 +295,8 @@ export function DataTable({
   };
 
   const addFilter = () => {
-    const first = columns.find(c => c.filterable !== false) || columns[0];
+    const first = safeColumns.find(c => c.filterable !== false) || safeColumns[0];
+    if (!first) return;
     setFilters(prev => [...prev, { id: crypto.randomUUID(), columnId: first.id, op: 'contains', value: '' }]);
     setShowFilters(true);
   };
@@ -371,7 +410,7 @@ export function DataTable({
                     Show / hide columns
                   </div>
                   <div className="p-3 max-h-64 overflow-y-auto space-y-2">
-                    {columns.map(c => {
+                    {safeColumns.map(c => {
                       const checked = !hiddenCols.has(c.id);
                       return (
                         <label key={c.id} className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-dark-text-secondary">
@@ -454,7 +493,7 @@ export function DataTable({
                   onChange={(e) => setFilters(prev => prev.map(x => x.id === f.id ? { ...x, columnId: e.target.value } : x))}
                   className="h-10 rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface px-3 text-xs font-black uppercase tracking-widest text-gray-700 dark:text-dark-text"
                 >
-                  {columns.filter(c => c.filterable !== false).map(c => (
+                  {safeColumns.filter(c => c.filterable !== false).map(c => (
                     <option key={c.id} value={c.id}>{c.header}</option>
                   ))}
                 </select>
@@ -525,8 +564,8 @@ export function DataTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-dark-border">
-                {pageRows.map((row) => {
-                  const rid = getRowId(row);
+                {pageRows.map((row, idx) => {
+                  const rid = safeGetRowId(row, startIdx + idx);
                   const checked = selected.has(rid);
                   return (
                     <tr
@@ -541,7 +580,7 @@ export function DataTable({
                       </td>
                       {orderedCols.map((c) => (
                         <td key={c.id} className="px-4 py-4">
-                          {c.cell ? c.cell(row) : String(c.accessor(row) ?? '—')}
+                          {c.cell ? c.cell(row) : String(getCellValue(c, row) ?? '—')}
                         </td>
                       ))}
                     </tr>
@@ -672,4 +711,3 @@ export function DataTable({
     </div>
   );
 }
-

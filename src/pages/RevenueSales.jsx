@@ -128,6 +128,8 @@ function formatRevenueDeltaValue(rawValue, currencyCode) {
 export function RevenueSales() {
   const { currentLocation, dataset } = useLocation();
   const columns = ['Identified', 'Contacted', 'Follow Up', 'Converted', 'Not Interested'];
+  const safePipelineLeads = Array.isArray(pipelineLeads) ? pipelineLeads : [];
+  const safeRecentConversions = Array.isArray(recentConversions) ? recentConversions : [];
   const demoPipelineLeads = useMemo(() => {
     const demoNames = [
       'Ananya Mehta', 'Dev Patel', 'Ishita Rao', 'Arjun Nair', 'Mehul Shah',
@@ -182,7 +184,7 @@ export function RevenueSales() {
       })
     );
   }, [columns]);
-  const initialPipeline = pipelineLeads.length >= columns.length * 2 ? pipelineLeads : [...pipelineLeads, ...demoPipelineLeads];
+  const initialPipeline = safePipelineLeads.length >= columns.length * 2 ? safePipelineLeads : [...safePipelineLeads, ...demoPipelineLeads];
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [selectedView, setSelectedView] = useState('All Stages');
@@ -812,7 +814,7 @@ export function RevenueSales() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-[#2D3748] transition-colors">
-                  {recentConversions.map((conv, i) => (
+                  {safeRecentConversions.map((conv, i) => (
                     <tr key={i} className="hover:bg-brand/5 dark:hover:bg-brand/10 transition-all group">
                       <td className="px-8 py-6 font-bold text-gray-900 dark:text-[#F1F5F9] uppercase tracking-tight">{conv.member}</td>
                       <td className="px-8 py-6">
