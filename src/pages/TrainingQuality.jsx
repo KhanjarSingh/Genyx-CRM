@@ -31,7 +31,7 @@ import {
   YAxis
 } from 'recharts';
 import { Card, CardContent } from '../components/UI/Card';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import {
   biomechanicsData,
   exerciseQualityData,
@@ -104,6 +104,16 @@ const KPI_ICONS = {
   emerald: Target, blue: Activity, green: TrendingUp, amber: Users, orange: Zap, red: ShieldAlert,
 };
 
+const KPI_HELP_TEXT = {
+  'Facility Form Score': 'Overall movement quality score across members based on AI analysis.',
+  'Coaching Impact Delta': 'Difference in performance between coached vs solo workouts.',
+  'Injury Risk Level': 'Estimated injury risk based on movement patterns and fatigue signals.',
+  'Participation Rate': 'Percentage of active members engaging regularly in workouts.',
+  'Form Degradation (Fatigue)': 'Drop in movement quality during sets, indicating fatigue buildup.',
+  'Urgent Interventions': 'Number of members flagged for immediate coaching attention.',
+  'Performance Speed': 'Average rate at which members improve movement quality and training performance over time.',
+};
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export function TrainingIntelligence() {
@@ -114,6 +124,27 @@ export function TrainingIntelligence() {
     try { return JSON.parse(localStorage.getItem('setupProgress') || '{}'); } catch { return {}; }
   })();
   const cvActive = localStorage.getItem('cvActive') === 'true' || setupProgress.zones === true;
+  const [openKpiHelp, setOpenKpiHelp] = useState(null);
+  const helpRefs = useRef({});
+
+  useEffect(() => {
+    if (!openKpiHelp) return undefined;
+
+    const handlePointerDown = (event) => {
+      const activeRef = helpRefs.current[openKpiHelp];
+      if (activeRef && !activeRef.contains(event.target)) {
+        setOpenKpiHelp(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [openKpiHelp]);
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-dark-bg transition-colors">
@@ -158,8 +189,33 @@ export function TrainingIntelligence() {
               return (
                 <Card key={i} className="border-gray-100 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
                   <CardContent className="p-5">
-                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${cfg.iconBg} mb-4 shadow-sm`}>
-                      <Icon className={`w-5 h-5 ${cfg.iconColor}`} />
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${cfg.iconBg} shadow-sm`}>
+                        <Icon className={`w-5 h-5 ${cfg.iconColor}`} />
+                      </div>
+                      <div
+                        ref={(el) => { helpRefs.current[kpi.title] = el; }}
+                        className="relative shrink-0"
+                        onMouseEnter={() => setOpenKpiHelp(kpi.title)}
+                        onMouseLeave={() => setOpenKpiHelp((current) => (current === kpi.title ? null : current))}
+                      >
+                        <button
+                          type="button"
+                          aria-label={`Explain ${kpi.title}`}
+                          onClick={() => setOpenKpiHelp((current) => current === kpi.title ? null : kpi.title)}
+                          className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 dark:border-dark-border bg-white/90 dark:bg-dark-elevated text-[11px] font-black text-gray-400 dark:text-dark-text-muted shadow-sm transition-colors hover:text-gray-700 dark:hover:text-dark-text"
+                        >
+                          ?
+                        </button>
+
+                        {openKpiHelp === kpi.title && (
+                          <div className="absolute right-0 top-7 z-20 w-56 rounded-2xl border border-gray-100 dark:border-dark-border bg-white dark:bg-dark-surface px-3 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] dark:shadow-black/30 animate-in fade-in zoom-in-95 duration-150">
+                            <p className="text-[11px] font-bold leading-relaxed text-gray-600 dark:text-dark-text-secondary">
+                              {KPI_HELP_TEXT[kpi.title]}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary leading-tight mb-2 uppercase tracking-widest">{kpi.title}</p>
                     <div className="flex items-baseline gap-1 mb-2">
@@ -177,7 +233,63 @@ export function TrainingIntelligence() {
           </div>
         </section>
 
-        {/* ── SECTION 2: MEMBER PROGRESS ──────────────────────────────────── */}
+        {/* ── SECTION 2: TRAINER PERFORMANCE ─────────────────────────────── */}
+        <section>
+          <div className="mb-5">
+            <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Trainer Performance Index</h2>
+            <p className="text-xs text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest mt-1">Average form score improvement per coach</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {trainerPerformanceData.map((t, i) => {
+              const pct = Math.round((t.improvement / 30) * 100);
+              const color = t.improvement >= 20 ? '#10b981' : t.improvement >= 12 ? '#f59e0b' : '#ef4444';
+              return (
+                <Card key={i} className="border-gray-100 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200 rounded-2xl">
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm" style={{ backgroundColor: color }}>
+                        {t.name.split(' ')[1]?.charAt(0) || t.name.charAt(0)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-black text-gray-900 dark:text-dark-text uppercase tracking-tight truncate">{t.name}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest">{t.members} members</p>
+                      </div>
+                      <div className="ml-auto text-right">
+                        <span className="text-2xl font-black tracking-tighter" style={{ color }}>+{t.improvement}</span>
+                        <p className="text-[10px] text-gray-300 dark:text-dark-text-muted font-bold uppercase">pts avg</p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-50 dark:bg-dark-elevated rounded-full h-1.5 mb-2 overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
+                    </div>
+                    <p className="text-[11px] text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest">Specialty: {t.specialty}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          <Card className="border-gray-100 dark:border-dark-border shadow-sm mt-4 rounded-2xl overflow-hidden">
+            <CardContent className="p-5">
+              <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training 4 Week Progress</h3>
+              <div className="space-y-6">
+                {ptVsSoloData.map((d) => (
+                  <div key={d.label}>
+                    <div className="flex items-center justify-between text-[11px] mb-2 font-black uppercase tracking-widest">
+                      <span className="text-gray-400 dark:text-dark-text-secondary">{d.label}</span>
+                      <span className="font-black" style={{ color: d.fill }}>+{d.improvement} pts</span>
+                    </div>
+                    <div className="w-full bg-gray-50 dark:bg-dark-elevated rounded-full h-2 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${(d.improvement / 25) * 100}%`, backgroundColor: d.fill }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* ── SECTION 3: MEMBER PROGRESS ──────────────────────────────────── */}
         <section>
           <div className="mb-6">
             <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Member Progress Insights</h2>
@@ -224,7 +336,32 @@ export function TrainingIntelligence() {
             <div className="flex flex-col gap-6">
               <Card className="border-gray-100 dark:border-dark-border shadow-sm">
                 <CardContent className="p-6">
-                  <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest mb-4">Performance Speed</p>
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <p className="text-[10px] font-black text-gray-400 dark:text-dark-text-secondary uppercase tracking-widest">Performance Speed</p>
+                    <div
+                      ref={(el) => { helpRefs.current['Performance Speed'] = el; }}
+                      className="relative shrink-0"
+                      onMouseEnter={() => setOpenKpiHelp('Performance Speed')}
+                      onMouseLeave={() => setOpenKpiHelp((current) => (current === 'Performance Speed' ? null : current))}
+                    >
+                      <button
+                        type="button"
+                        aria-label="Explain Performance Speed"
+                        onClick={() => setOpenKpiHelp((current) => current === 'Performance Speed' ? null : 'Performance Speed')}
+                        className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 dark:border-dark-border bg-white/90 dark:bg-dark-elevated text-[11px] font-black text-gray-400 dark:text-dark-text-muted shadow-sm transition-colors hover:text-gray-700 dark:hover:text-dark-text"
+                      >
+                        ?
+                      </button>
+
+                      {openKpiHelp === 'Performance Speed' && (
+                        <div className="absolute right-0 top-7 z-20 w-56 rounded-2xl border border-gray-100 dark:border-dark-border bg-white dark:bg-dark-surface px-3 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] dark:shadow-black/30 animate-in fade-in zoom-in-95 duration-150">
+                          <p className="text-[11px] font-bold leading-relaxed text-gray-600 dark:text-dark-text-secondary">
+                            {KPI_HELP_TEXT['Performance Speed']}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="text-5xl font-black text-gray-900 dark:text-dark-text tracking-tighter tabular-nums mb-1">{memberProgressStats.avgVelocity}</div>
                   <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest">{memberProgressStats.velocityDesc}</p>
 
@@ -255,7 +392,7 @@ export function TrainingIntelligence() {
           </div>
         </section>
 
-        {/* ── SECTION 3: EXERCISE INTELLIGENCE ────────────────────────────── */}
+        {/* ── SECTION 4: EXERCISE INTELLIGENCE ────────────────────────────── */}
         <section>
           <div className="mb-6">
             <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Exercise Quality Index</h2>
@@ -376,61 +513,6 @@ export function TrainingIntelligence() {
               </div>
             </Card>
 
-            {/* ── SECTION 6: TRAINER PERFORMANCE ─────────────── */}
-            <div className="mt-12">
-              <div className="mb-5">
-                <h2 className="text-lg font-black text-gray-900 dark:text-dark-text uppercase tracking-tight">Trainer Performance Index</h2>
-                <p className="text-xs text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest mt-1">Average form score improvement per coach</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {trainerPerformanceData.map((t, i) => {
-                  const pct = Math.round((t.improvement / 30) * 100);
-                  const color = t.improvement >= 20 ? '#10b981' : t.improvement >= 12 ? '#f59e0b' : '#ef4444';
-                  return (
-                    <Card key={i} className="border-gray-100 dark:border-dark-border shadow-sm hover:shadow-md transition-all duration-200 rounded-2xl">
-                      <CardContent className="p-5">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm" style={{ backgroundColor: color }}>
-                            {t.name.split(' ')[1]?.charAt(0) || t.name.charAt(0)}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-black text-gray-900 dark:text-dark-text uppercase tracking-tight truncate">{t.name}</p>
-                            <p className="text-[10px] text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest">{t.members} members</p>
-                          </div>
-                          <div className="ml-auto text-right">
-                            <span className="text-2xl font-black tracking-tighter" style={{ color }}>+{t.improvement}</span>
-                            <p className="text-[10px] text-gray-300 dark:text-dark-text-muted font-bold uppercase">pts avg</p>
-                          </div>
-                        </div>
-                        <div className="w-full bg-gray-50 dark:bg-dark-elevated rounded-full h-1.5 mb-2 overflow-hidden">
-                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
-                        </div>
-                        <p className="text-[11px] text-gray-400 dark:text-dark-text-secondary font-bold uppercase tracking-widest">Specialty: {t.specialty}</p>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-
-              <Card className="border-gray-100 dark:border-dark-border shadow-sm mt-4 rounded-2xl overflow-hidden">
-                <CardContent className="p-5">
-                  <h3 className="text-[11px] font-black text-gray-900 dark:text-dark-text uppercase tracking-widest mb-5">PT vs. Solo Training 4 Week Progress</h3>
-                  <div className="space-y-6">
-                    {ptVsSoloData.map((d) => (
-                      <div key={d.label}>
-                        <div className="flex items-center justify-between text-[11px] mb-2 font-black uppercase tracking-widest">
-                          <span className="text-gray-400 dark:text-dark-text-secondary">{d.label}</span>
-                          <span className="font-black" style={{ color: d.fill }}>+{d.improvement} pts</span>
-                        </div>
-                        <div className="w-full bg-gray-50 dark:bg-dark-elevated rounded-full h-2 overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${(d.improvement / 25) * 100}%`, backgroundColor: d.fill }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </section>
 
           {/* Section 5: Members who need attention */}

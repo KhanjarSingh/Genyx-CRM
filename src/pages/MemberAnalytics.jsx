@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/UI/Card';
 import { Badge } from '../components/UI/Badge';
 import { Button } from '../components/UI/Button';
-import { Search, Filter, Mail, Tag, UserCheck, ShieldAlert, X, Phone, Calendar, Target, Activity, MapPin, Clock, AlertTriangle, ChevronRight, Contact, Dumbbell, PlaySquare } from 'lucide-react';
+import { Search, Filter, Mail, Tag, UserCheck, ShieldAlert, X, Phone, Calendar, Target, Activity, MapPin, Clock, AlertTriangle, ChevronRight, Contact, Dumbbell, PlaySquare, Users } from 'lucide-react';
 import { useLocation } from '../context/LocationContext';
 import { formatCurrency } from '../utils/currency';
 import { useAuth } from '../context/AuthContext';

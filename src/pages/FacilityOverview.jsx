@@ -1,4 +1,4 @@
-import { Users, Activity, AlertCircle, Dumbbell, ArrowRight, DollarSign, TrendingUp } from 'lucide-react';
+import { Users, Activity, AlertCircle, Dumbbell, ArrowRight, TrendingUp } from 'lucide-react';
 import { StatItem } from '../components/UI/StatItem';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/UI/Card';
 import { Badge } from '../components/UI/Badge';
@@ -38,12 +38,10 @@ export function FacilityOverview() {
   const podsConnected = localStorage.getItem('podsConnected') === 'true' || setupProgress.zones === true;
 
   const totalMRR = currentLocation.mrr || 0;
-  const facilitySquareFootage = currentLocation.squareFootage || 1;
   const totalActiveMembers = currentLocation.activeMembers ?? currentLocation.memberCount ?? 0;
   const totalStaff = currentLocation.staffCount || 0;
   const avgMembershipDurationMonths = currentLocation.avgMembershipDurationMonths || 12;
 
-  const revenuePerSqft = totalMRR / facilitySquareFootage;
   const avgMonthlyRevenue = totalActiveMembers > 0 ? totalMRR / totalActiveMembers : 0;
   const memberLTV = avgMonthlyRevenue * avgMembershipDurationMonths;
 
@@ -116,25 +114,6 @@ export function FacilityOverview() {
           changeType="positive"
           portfolioAvg="71%"
           rank="#2 of 12"
-        />
-        <StatItem
-          title="Action Items"
-          value="3"
-          icon={AlertCircle}
-          change="1"
-          changeType="negative"
-          portfolioAvg="4.2"
-          rank="#5 of 12"
-        />
-
-        <StatItem
-          title="Revenue per sq ft"
-          value={`${formatCurrency(Math.round(revenuePerSqft), 'en-IN', currentLocation.currency)}/sq ft`}
-          icon={DollarSign}
-          change="3.1%"
-          changeType="positive"
-          portfolioAvg={`${formatCurrency(Math.round(revenuePerSqft * 0.92), 'en-IN', currentLocation.currency)}/sq ft`}
-          rank="#3 of 12"
         />
         <StatItem
           title="Member LTV"
